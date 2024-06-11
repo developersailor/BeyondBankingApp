@@ -12,21 +12,12 @@ const HomeScreen: React.FC = () => {
   const coupons
   = useSelector((state: RootState) => state.coupons );
 
-  interface Coupons {
-    id: number;
-    name: string;
-    price: number;
-    quantity: number;
-  }
-  
-  const initialState: Coupons[] = [];
   
 
   return (
     <ScrollView style={{ backgroundColor: 'white', height: '100%' }}>
       <View style={{ padding: 16 }}>
         <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Beyond Banking</Text>
-
         {/* Split the bill */}
         <View style={{ marginTop: 16 }}>
           <Text style={{ fontSize: 18, fontWeight: '600' }}>Split the bill</Text>

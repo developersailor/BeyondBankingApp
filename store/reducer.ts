@@ -14,6 +14,7 @@ export const couponSlice = createSlice({
                 coupon.id === couponId ? { ...coupon, activated: true } : coupon
             );
         },
+        
     },
 });
 
