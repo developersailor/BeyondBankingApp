@@ -36,14 +36,14 @@ const HomeScreen: React.FC = () => {
         {/* Coupons */}
         <View style={{ marginTop: 32 }}>
           <Text style={{ fontSize: 18, fontWeight: '600' }}>My Coupons</Text>
-          {coupons.map((coupon:any) => (
+          {coupons.map((coupon) => (
             <View key={coupon.id} style={styles.coupon}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{coupon.name}</Text>
                 <TouchableOpacity
                   style={coupon.activated ? styles.activatedButton : styles.activateButton}
                   onPress={() => dispatch(
-                    activateCoupon(coupon)
+                    activateCoupon(coupon.id)
                   )}
                 >
                   <Text style={{ color: 'white', fontWeight: '600' }}>{coupon.activated ? 'Activated' : 'Activate'}</Text>
