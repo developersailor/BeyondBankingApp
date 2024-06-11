@@ -10,7 +10,7 @@ const HomeScreen: React.FC = () => {
   const dispatch = useDispatch();
   const coupons = useSelector((state: RootState) => state.coupons);
  let ref =  useRef(5);
- const [bill, onChangeBill] = React.useState('');
+ const [bill, onChangeBill] = React.useState(100);
 return (
     <ScrollView style={{ backgroundColor: "white", height: "100%" }}>
       <View style={{ padding: 16 }}>
@@ -19,17 +19,16 @@ return (
 
         <View style={{ marginTop: 32 }}>
           <Text style={{ fontSize: 18, fontWeight: "600" }}>Split the bill</Text>
-          <TextInput 
-          placeholder="fatura tutarını girin"
-          keyboardType="number-pad"
-                       // girilen sayı faturadır.
-              // faturanın pay edilmesi gerekmektedir
-                //faturanın girdisini alacağız
-               onChangeText={
-                  onChangeBill
-               }
-
-          ></TextInput>
+    
+          <TextInput
+            placeholder="Fatura tutarını girin"
+            keyboardType="number-pad"
+            onChangeText={(text) => {
+              const billAmount = parseInt(text);
+              // Fatura tutarını kullanarak işlemlerinizi buraya yazın
+              console.log("Fatura tutarı:", billAmount); // Örnek: Konsola yazdırma
+            }}
+          />
           <View style={{ flexDirection: "row", marginTop: 8 }}>
             <TouchableOpacity style={styles.avatarButton}>
               <Text style={{ fontSize: 18, fontWeight: "bold" }}>+</Text>
@@ -60,6 +59,9 @@ return (
       </View>
       <BuySelectedFriendBill selectedFriend={ref.current 
       } bill={0} />
+      <Text>
+        ${bill / ref.current}
+      </Text>
     </ScrollView>
   );
 };
