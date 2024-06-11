@@ -1,70 +1,114 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import React from 'react';
+import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet, AppState } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
+import '../../store/reducer';
+import '../../store/store';
+import { activateCoupon } from '@/store/reducer';
+import { RootState } from '../../store/store';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+const HomeScreen: React.FC = () => {
 
-export default function HomeScreen() {
+  const dispatch = useDispatch();
+  const coupons
+  = useSelector((state: RootState) => state.coupons );
+
+  interface Coupons {
+    id: number;
+    name: string;
+    price: number;
+    quantity: number;
+  }
+  
+  const initialState: Coupons[] = [];
+  
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <ScrollView style={{ backgroundColor: 'white', height: '100%' }}>
+      <View style={{ padding: 16 }}>
+        <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Beyond Banking</Text>
+
+        {/* Split the bill */}
+        <View style={{ marginTop: 16 }}>
+          <Text style={{ fontSize: 18, fontWeight: '600' }}>Split the bill</Text>
+          <View style={{ flexDirection: 'row', marginTop: 8 }}>
+            <TouchableOpacity style={styles.avatarButton}>
+              <Text style={{ fontSize: 18, fontWeight: 'bold' }}>+</Text>
+            </TouchableOpacity>
+            {['Olga', 'Maria', 'Stefan', 'Michal'].map((name, index) => (
+              <View key={index} style={styles.avatar}>
+                <Text style={{ fontSize: 14 }}>{name}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        {/* Coupons */}
+        <View style={{ marginTop: 32 }}>
+          <Text style={{ fontSize: 18, fontWeight: '600' }}>My Coupons</Text>
+          {coupons.map((coupon:any) => (
+            <View key={coupon.id} style={styles.coupon}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{coupon.name}</Text>
+                <TouchableOpacity
+                  style={coupon.activated ? styles.activatedButton : styles.activateButton}
+                  onPress={() => dispatch(
+                    activateCoupon(coupon)
+                  )}
+                >
+                  <Text style={{ color: 'white', fontWeight: '600' }}>{coupon.activated ? 'Activated' : 'Activate'}</Text>
+                </TouchableOpacity>
+              </View>
+              <Text style={{ fontSize: 14, color: 'gray' }}>{coupon.discount}</Text>
+              <Text style={{ fontSize: 14, color: 'gray' }}>Expires in {coupon.time}</Text>
+              <Image source={{ uri: 'barcode_image_url' }} style={{ height: 48, marginTop: 8 }} />
+            </View>
+          ))}
+        </View>
+      </View>
+    </ScrollView>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
+  avatarButton: {
+    height: 48,
+    width: 48,
+    borderRadius: 24,
+    backgroundColor: 'gray',
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: 8,
+    marginRight: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  avatar: {
+    height: 48,
+    width: 48,
+    borderRadius: 24,
+    backgroundColor: 'lightgray',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 8,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  coupon: {
+    marginTop: 16,
+    padding: 16,
+    backgroundColor: 'white',
+    borderRadius: 8,
+    shadowColor: 'black',
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  activatedButton: {
+    backgroundColor: 'green',
+    paddingVertical: 4,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+  },
+  activateButton: {
+    backgroundColor: 'black',
+    paddingVertical: 4,
+    paddingHorizontal: 16,
+    borderRadius: 8,
   },
 });
+export default HomeScreen;
