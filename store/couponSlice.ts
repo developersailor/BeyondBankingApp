@@ -1,8 +1,5 @@
 // redux/reducer.ts
 import {PayloadAction, createSlice} from '@reduxjs/toolkit';
-interface Bill{
-    bill: number;
-}
 interface Coupon {
     id: number;
     name: string;

@@ -25,10 +25,12 @@ return (
             keyboardType="number-pad"
             onChangeText={(text) => {
               const billAmount = parseInt(text);
+
               // Fatura tutarını kullanarak işlemlerinizi buraya yazın
-              console.log("Fatura tutarı:", billAmount); // Örnek: Konsola yazdırma
+             onChangeBill(billAmount);
             }}
           />
+          <Button title="bölüştür" onPress={()=> onChangeBill(bill)}></Button>
           <View style={{ flexDirection: "row", marginTop: 8 }}>
             <TouchableOpacity style={styles.avatarButton}>
               <Text style={{ fontSize: 18, fontWeight: "bold" }}>+</Text>
@@ -57,8 +59,7 @@ return (
           ))}
         </View>
       </View>
-      <BuySelectedFriendBill selectedFriend={ref.current 
-      } bill={0} />
+      <BuySelectedFriendBill selectedFriend={ref.current} bill={10} />
       <Text>
         ${bill / ref.current}
       </Text>
