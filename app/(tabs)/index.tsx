@@ -52,32 +52,24 @@ const HomeScreen: React.FC = () => {
 
         <View style={{ marginTop: 32 }}>
           <Text style={{ fontSize: 18, fontWeight: "600" }}>Split the bill</Text>
-
-          <TextInput
-            placeholder="Enter bill amount"
-            keyboardType="numeric"
-            value={billInput}
-            onChangeText={handleBillChange}
-          />
-
-          <View style={{ flexDirection: "row", marginTop: 8 }}>
+          <View style={{ flexDirection: "column", marginTop: 8 }}>
+            <Text style={{ fontSize: 18, fontWeight: "600" }}>Bill Amount</Text>
             <TextInput
-              placeholder="Number of people"
-              keyboardType="number-pad"
-              value={splitInput}
-              onChangeText={handleSplitChange}
+              placeholder="Enter bill amount"
+              keyboardType="numeric"
+              value={billInput}
+              onChangeText={handleBillChange}
+              style={{ fontSize: 58, width: 100, height:100, textAlign: "center"}}
             />
+            <Text style={{ fontSize: 58, fontWeight: "600" }}>Number of people</Text>
+            <TextInput
+                placeholder="Number of people"
+                keyboardType="number-pad"
+                value={splitInput}
+                onChangeText={handleSplitChange}
+                style={{ fontSize: 108, width: 100, height:100 , textAlign: "center"}}
+              />
           </View>
-
-          <Button
-            title="Apply Coupon"
-            onPress={handleApplyCoupon}
-          />
-
-          <Button
-            title="Split"
-            onPress={handleBillSplit}
-          />
         </View>
 
         <View style={{ marginTop: 32 }}>
@@ -99,11 +91,22 @@ const HomeScreen: React.FC = () => {
           ))}
         </View>
       </View>
+      <Button
+            title="Apply Coupon"
+            onPress={handleApplyCoupon}
+          />
       <Text style={{ fontSize: 100 }}>
         {isNaN( 
           splitAmount ?? 0
         )? "Invalid input" : (splitAmount ?? 0).toFixed(2)}
       </Text>
+
+      
+
+      <Button
+       title="Split"
+            onPress={handleBillSplit}
+          />
     </ScrollView>
   );
 };
