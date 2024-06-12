@@ -1,38 +1,74 @@
-// redux/reducer.ts
-import {PayloadAction, createSlice} from '@reduxjs/toolkit';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+
 interface Coupon {
+    discountedBill: number | undefined;
+    splitAmount: number | undefined;
     id: number;
     name: string;
     discount: string;
     time: string;
     activated: boolean;
 }
-const initialState: Coupon[] = [ { id: 1, name: "McDonald's", discount: '-10%', time: '12m 5s', activated: false },
-    { id: 2, name: 'Nike Store', discount: '-5%', time: '30 min', activated: false },];
+
+const initialState: Coupon[] = [
+    {
+      id: 1, name: "McDonald's", discount: '-10', time: '12m 5s', activated: false,
+      discountedBill: undefined,
+      splitAmount: undefined
+    },
+    {
+      id: 2, name: 'Nike Store', discount: '-5', time: '30 min', activated: false,
+      discountedBill: undefined,
+      splitAmount: undefined
+    },
+];
 
 export const couponSlice = createSlice({
     name: 'coupons',
     initialState: initialState,
     reducers: {
         activateCoupon: (state, action: PayloadAction<number>) => {
-            const couponId = action.payload;
-            return state.map((coupon) =>
-                coupon.id === couponId ? { ...coupon, activated: true } : coupon
-            );
+            return state.map(coupon => ({
+                ...coupon,
+                activated: coupon.id === action.payload,
+            }));
         },
-        // indirim kuponu eklemek için yeni bir reducer oluşturun
         addCoupon: (state, action: PayloadAction<{ id: number, name: string, discount: string, time: string, activated: boolean }>) => {
-            return [...state, action.payload];
+            const { id, name, discount, time, activated } = action.payload;
+            state.push({
+                id,
+                name,
+                discount,
+                time,
+                activated,
+                discountedBill: undefined,
+                splitAmount: undefined
+            });
         },
-        // faturaları bölüştürmek için yeni bir reducer
-        billSplit: (state, action: PayloadAction<number>) => {
+        applyCoupon: (state, action: PayloadAction<number>) => {
             const bill = action.payload;
-            return state.map((coupon) =>
-                coupon.activated ? { ...coupon, discount: (bill / 10).toString() } : coupon
-            );
+            const activatedCoupon = state.find(coupon => coupon.activated);
+            
+            if (activatedCoupon) {
+                const discountValue = parseFloat(activatedCoupon.discount);
+                const discountedBill = bill + discountValue;  // Adding because discount is negative
+                return state.map(coupon => ({
+                    ...coupon,
+                    discountedBill: coupon.activated ? discountedBill : undefined,
+                }));
+            }
+            return state;
+        },
+        billSplit: (state, action: PayloadAction<{ discountedBill: number; split: number }>) => {
+            const { discountedBill, split } = action.payload;
+            const splitAmount = discountedBill / split;
+            return state.map(coupon => ({
+                ...coupon,
+                splitAmount: coupon.activated ? splitAmount : undefined,
+            }));
         },
     },
 });
 
-export const { activateCoupon, addCoupon, billSplit } = couponSlice.actions;
+export const { activateCoupon, addCoupon, applyCoupon, billSplit } = couponSlice.actions;
 export default couponSlice.reducer;

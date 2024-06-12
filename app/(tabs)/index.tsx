@@ -1,17 +1,50 @@
-// HomeScreen.tsx
-import React,{useRef,useEffect} from "react";
+import React from "react";
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Button, TextInput } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import { activateCoupon } from "@/store/couponSlice";
+import { activateCoupon, applyCoupon, billSplit } from "@/store/couponSlice";
 import { RootState } from "../../store/store";
-import  {BuySelectedFriendBill} from "./BuySelectedFriendBill";
 
 const HomeScreen: React.FC = () => {
   const dispatch = useDispatch();
   const coupons = useSelector((state: RootState) => state.coupons);
- let ref =  useRef(5);
- const [bill, onChangeBill] = React.useState(100);
-return (
+
+  const [bill, setBill] = React.useState<number>(0);
+  const [split, setSplit] = React.useState<number>(1);
+  const [billInput, setBillInput] = React.useState<string>("0");
+  const [splitInput, setSplitInput] = React.useState<string>("1");
+
+  const handleBillChange = (text: string) => {
+    setBillInput(text);
+    const billAmount = parseFloat(text);
+    if (!isNaN(billAmount)) {
+      setBill(billAmount);
+    }
+  };
+
+  const handleSplitChange = (text: string) => {
+    setSplitInput(text);
+    const splitAmount = parseInt(text, 10);
+    if (!isNaN(splitAmount)) {
+      setSplit(splitAmount);
+    }
+  };
+
+  const handleApplyCoupon = () => {
+    if (!isNaN(bill)) {
+      dispatch(applyCoupon(bill));
+    }
+  };
+
+  const handleBillSplit = () => {
+    const discountedBill = coupons.find(coupon => coupon.discountedBill !== undefined)?.discountedBill || bill;
+    if (!isNaN(discountedBill) && !isNaN(split)) {
+      dispatch(billSplit({ discountedBill, split }));
+    }
+  };
+
+  const splitAmount = coupons.find(coupon => coupon.splitAmount !== undefined)?.splitAmount;
+
+  return (
     <ScrollView style={{ backgroundColor: "white", height: "100%" }}>
       <View style={{ padding: 16 }}>
         <Text style={{ fontSize: 24, fontWeight: "bold" }}>Beyond Banking</Text>
@@ -19,28 +52,32 @@ return (
 
         <View style={{ marginTop: 32 }}>
           <Text style={{ fontSize: 18, fontWeight: "600" }}>Split the bill</Text>
-    
-          <TextInput
-            placeholder="Fatura tutarını girin"
-            keyboardType="number-pad"
-            onChangeText={(text) => {
-              const billAmount = parseInt(text);
 
-              // Fatura tutarını kullanarak işlemlerinizi buraya yazın
-             onChangeBill(billAmount);
-            }}
+          <TextInput
+            placeholder="Enter bill amount"
+            keyboardType="numeric"
+            value={billInput}
+            onChangeText={handleBillChange}
           />
-          <Button title="bölüştür" onPress={()=> onChangeBill(bill)}></Button>
+
           <View style={{ flexDirection: "row", marginTop: 8 }}>
-            <TouchableOpacity style={styles.avatarButton}>
-              <Text style={{ fontSize: 18, fontWeight: "bold" }}>+</Text>
-            </TouchableOpacity>
-            {Array.from({ length: 5 }).map((_, index) => (
-              <TouchableOpacity key={index} style={styles.avatar} onPress={() => ref.current = index}>
-                <Text style={{ fontSize: 18, fontWeight: "bold" }}>{index}</Text>
-              </TouchableOpacity>
-            ))}
+            <TextInput
+              placeholder="Number of people"
+              keyboardType="number-pad"
+              value={splitInput}
+              onChangeText={handleSplitChange}
+            />
           </View>
+
+          <Button
+            title="Apply Coupon"
+            onPress={handleApplyCoupon}
+          />
+
+          <Button
+            title="Split"
+            onPress={handleBillSplit}
+          />
         </View>
 
         <View style={{ marginTop: 32 }}>
@@ -49,7 +86,10 @@ return (
             <View key={coupon.id} style={styles.coupon}>
               <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
                 <Text style={{ fontSize: 18, fontWeight: "bold" }}>{coupon.name}</Text>
-                <TouchableOpacity style={coupon.activated ? styles.activatedButton : styles.activateButton} onPress={() => dispatch(activateCoupon(coupon.id))}>
+                <TouchableOpacity
+                  style={coupon.activated ? styles.activatedButton : styles.activateButton}
+                  onPress={() => dispatch(activateCoupon(coupon.id))}
+                >
                   <Text style={{ color: "white", fontWeight: "600" }}>{coupon.activated ? "Activated" : "Activate"}</Text>
                 </TouchableOpacity>
               </View>
@@ -59,9 +99,10 @@ return (
           ))}
         </View>
       </View>
-      <BuySelectedFriendBill selectedFriend={ref.current} bill={10} />
-      <Text>
-        ${bill / ref.current}
+      <Text style={{ fontSize: 100 }}>
+        {isNaN( 
+          splitAmount ?? 0
+        )? "Invalid input" : (splitAmount ?? 0).toFixed(2)}
       </Text>
     </ScrollView>
   );
